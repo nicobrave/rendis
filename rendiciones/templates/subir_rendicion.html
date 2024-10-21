@@ -1,0 +1,21 @@
+<h2>Subir Rendición de Gastos</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Cargar Rendición</button>
+</form>
+
+<h3>Lista de Rendiciones Subidas</h3>
+<ul>
+    {% for rendicion in rendiciones %}
+    <li>
+        <a href="{{ rendicion.imagen_factura.url }}" target="_blank">Ver Imagen</a> - Subida el {{ rendicion.fecha_subida }}
+        <form action="{% url 'eliminar_rendicion' rendicion.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta rendición?')">Eliminar</button>
+        </form>
+    </li>
+    {% empty %}
+    <li>No hay rendiciones subidas aún.</li>
+    {% endfor %}
+</ul>

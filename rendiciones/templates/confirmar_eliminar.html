@@ -1,0 +1,7 @@
+<h2>¿Estás seguro de eliminar esta rendición?</h2>
+<p>Esta acción no se puede deshacer.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Eliminar</button>
+    <a href="{% url 'lista_rendiciones' %}">Cancelar</a>
+</form>

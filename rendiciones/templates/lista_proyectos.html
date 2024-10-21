@@ -1,0 +1,7 @@
+<h2>Proyectos</h2>
+<ul>
+  {% for proyecto in proyectos %}
+    <li>{{ proyecto.nombre }} - Jefe de Obra: {{ proyecto.jefe_obra.username }}</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'crear_proyecto' %}">Crear un nuevo proyecto</a>
