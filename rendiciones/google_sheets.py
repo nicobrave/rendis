@@ -2,12 +2,24 @@ from decouple import config
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
+import json
+import os
 
 # Configuración de Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# Cargar las credenciales del archivo JSON
-creds = Credentials.from_service_account_file(config('GOOGLE_APPLICATION_CREDENTIALS'), scopes=['https://www.googleapis.com/auth/spreadsheets'])
+# Verificar si estamos en un entorno de Render con la variable de entorno cargada
+credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
+if credentials_json and credentials_json.startswith('{'):
+    # Si es una cadena JSON, estamos en Render
+    credentials_info = json.loads(credentials_json)
+    creds = Credentials.from_service_account_info(credentials_info)
+else:
+    # Si no, asume que estamos en desarrollo local y usa el archivo de credenciales
+    creds = Credentials.from_service_account_file('secrets/credentials.json')
+
+# Inicializar el cliente de Google Sheets con las credenciales correspondientes
 service = build('sheets', 'v4', credentials=creds)
 
 def save_to_google_sheets(uid, email, project_id, provider_name, document_type, detail, document_number, document_date, total_amount, google_sheet_url, sheet_name, item_number):

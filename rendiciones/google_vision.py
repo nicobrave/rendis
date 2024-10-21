@@ -1,11 +1,23 @@
 from decouple import config
 import re
 from google.cloud import vision
+from google.oauth2.service_account import Credentials
 import os
+import json
 
-# Inicializar Google Vision Client (asegúrate de tener configuradas las credenciales)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config('GOOGLE_APPLICATION_CREDENTIALS')
-client = vision.ImageAnnotatorClient()
+# Verificar si estamos en un entorno de Render con la variable de entorno cargada
+credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
+if credentials_json and credentials_json.startswith('{'):
+    # Si es una cadena JSON, estamos en Render
+    credentials_info = json.loads(credentials_json)
+    credentials = Credentials.from_service_account_info(credentials_info)
+else:
+    # Si no, asume que estamos en desarrollo local y usa el archivo de credenciales
+    credentials = Credentials.from_service_account_file('secrets/credentials.json')
+
+# Inicializar el cliente de Google Vision con las credenciales
+client = vision.ImageAnnotatorClient(credentials=credentials)
 
 def process_receipt(image_file):
     try:
